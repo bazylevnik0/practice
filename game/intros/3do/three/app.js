@@ -25,15 +25,15 @@ camera.position.z = 5;
 //earth
 var earth = {
 	loaded   : false,
-	map      : {},
+	map      : [],
 	material : undefined,
 	sprite   : undefined,
 	build    : function () {		
 			function loadMaps() {
 				return new Promise((resolve, reject) => {
-					for (let i = 0; i < 22; i++) { earth.map[""+i] = new THREE.TextureLoader().load( './earth/' + i + '.png' ); }
+					for (let i = 0; i < 22; i++) { earth.map[i] = new THREE.TextureLoader().load( './earth/' + i + '.png' ); }
 					let timer = setInterval( function () {
-						if ( earth.map["21"] !== undefined ) {
+						if ( earth.map[21] !== undefined ) {
 							clearInterval(timer)
 							resolve(true)
 						} 
@@ -43,7 +43,7 @@ var earth = {
 			async function loadMat() {
  	 		await loadMaps()
 				return new Promise((resolve , reject) => {	
-					earth.material = new THREE.SpriteMaterial( { map: earth.map["0"] } ) 
+					earth.material = new THREE.SpriteMaterial( { map: earth.map[0] } ) 
 					let timer = setInterval( function () {
 						if (earth.material !== undefined ) {
 							clearInterval(timer)
@@ -74,7 +74,6 @@ var earth = {
 		       }
 		 }
 }
-earth.build()
 
 //stars
 var stars = {
@@ -94,7 +93,7 @@ var stars = {
 							clearInterval(timer_material)
 							let timer_sprite = setInterval( ()=> {
 								if(stars.sprite !== undefined ){
-									stars.sprite.scale.x = stars.sprite.scale.y = 0.25;			
+									stars.sprite.scale.x = stars.sprite.scale.y = 0.25;
 									clearInterval(timer_sprite)
 									fill()
 								}
@@ -103,15 +102,11 @@ var stars = {
 					} , 100) 
 				}
 			},100)
-			function fill() {	
-				// -3 3
-				// -7 7 
-				let array = []; 
+			function fill() {
+				let array = [];
 				let  x ,  y ,  z ,
 				    rx , ry , rz , check
-						     //27
 				for (let i = 0 ; i < 28; i+=4) {
-							    //48
 					for (let j = 0; j < 60; j+=4) {
 						check = Math.floor(Math.random()*2);
 						if (check == 1) {
@@ -146,8 +141,8 @@ var stars = {
 				stars.groups[1].name = "stars_b"
 				stars.groups[2].name = "stars_c"
 				stars.groups[0].position.z = -14
-				stars.groups[1].position.z = -7
-				stars.groups[2].position.z = 5
+				stars.groups[1].position.z = -9
+				stars.groups[2].position.z = -4
 				scene.add(stars.groups[0],stars.groups[1],stars.groups[2])
 				stars.loaded = true
 			}
@@ -158,28 +153,181 @@ var stars = {
 				stars.move.check = true
 				let timer = setInterval( function () {
 					stars.move.check == false ? clearInterval(timer) : false
-					stars.groups[0].position.z < 5 ? stars.groups[0].position.z += 0.5 : stars.groups[0].position.z = -14	
-					stars.groups[1].position.z < 5 ? stars.groups[1].position.z += 0.5 : stars.groups[1].position.z = -14	
-					stars.groups[2].position.z < 5 ? stars.groups[2].position.z += 0.5 : stars.groups[2].position.z = -14	
+					stars.groups[0].position.z < -4 ? stars.groups[0].position.z += 0.5 : stars.groups[0].position.z = -14	
+					stars.groups[1].position.z < -4 ? stars.groups[1].position.z += 0.5 : stars.groups[1].position.z = -14	
+					stars.groups[2].position.z < -4 ? stars.groups[2].position.z += 0.5 : stars.groups[2].position.z = -14	
 				},1000/12)
 		        }
 		 }
 }
 
-stars.build()
+//asteroids
+var asteroids = {
+	loaded    : false,
+	map       : [],
+	material  : [],
+	sprite    : [],
+	groups   : [ new THREE.Group() , new THREE.Group() , new THREE.Group() ],
+	build    : function () {
+			function loadMaps() {
+				return new Promise((resolve, reject) => {
+					for (let i = 0 ; i < 6 ; i++) { asteroids.map.push( new THREE.TextureLoader().load( './asteroids/' + i + '.png' )); }
+					let timer = setInterval( function () {
+						if ( asteroids.map[5] !== undefined ) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					} , 100 );
+				})
+			}
+			async function loadMat() {
+ 	 		await loadMaps()
+				return new Promise((resolve , reject) => {
+					for (let i = 0 ; i < 6 ; i++) { asteroids.material.push( new THREE.SpriteMaterial( { map: asteroids.map[i] } )); }
+					let timer = setInterval( function () {
+						if (asteroids.material[5] !== undefined ) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					} , 100);
+				})	
+			}
+			async function createSprite() {
+ 			await loadMat()
+				for( let i = 0; i < 6; i++) { asteroids.sprite.push( new THREE.Sprite( asteroids.material[i] )); }
+				fill()
+			}
+			createSprite()
+			function fill() {
+				let  x ,  y ,  z , obj, scale_x , scale_y , rotate,
+				    rx , ry , rz , check
+				for (let i = 0 ; i < 7; i++) {
+					for (let j = 0; j < 15; j+=2) {
+						check = Math.floor(Math.random()*2);
+						if (check == 1) {
+							rx = Math.random()
+							ry = Math.random()
+							rz = Math.random()
+							x = j - 7 + rx
+							y = i - 3 + ry
+							obj = Math.ceil(Math.random()*5)
+							scale_x = Math.random()*2
+							scale_y = Math.random()*2
+							rotate = Math.random()*5
+							let temp_a = asteroids.sprite[obj].clone()
+							    temp_a.rotation.x = rotate
+							    temp_a.position.set( x , y , rz * 10)
+							    temp_a.scale.set( scale_x , scale_y , 1)
+							    asteroids.groups[0].add(temp_a)
+							x *= (-1)
+							y *= (-1)
+							scale_x = Math.random()*2
+							scale_y = Math.random()*2
+							obj = Math.ceil(Math.random()*5)
+							rotate = Math.random()*5
+							let temp_b = asteroids.sprite[obj].clone()
+					   		    temp_b.rotation.x = rotate		
+							    temp_b.position.set( x , y , rz * 10)
+							    temp_b.scale.set( scale_x , scale_y , 1)
+							    asteroids.groups[1].add(temp_b)
+							x *= (-1)
+							y *= (-1)
+							scale_x = Math.random()*2
+							scale_y = Math.random()*2
+							rotate = Math.random()*5
+							obj = Math.ceil(Math.random()*5)
+							let temp_c = asteroids.sprite[obj].clone()
+							    temp_c.rotation.x = rotate		
+							    temp_c.position.set( x , y , rz * 10)
+							    temp_c.scale.set( scale_x , scale_y , 1)
+							    asteroids.groups[2].add(temp_c)
+						}
+					}
+				}
+				asteroids.groups[0].name = "asteroids_a"
+				asteroids.groups[1].name = "asteroids_b"
+				asteroids.groups[2].name = "asteroids_c"
+				asteroids.groups[0].position.z = -14
+				asteroids.groups[1].position.z = -7
+				asteroids.groups[2].position.z = 5
+				scene.add(asteroids.groups[0],asteroids.groups[1],asteroids.groups[2])
+				asteroids.loaded = true;
+			}
+		 },
+	refill   : function (name){
+				let num
+				switch(name){
+					case "asteroids_a" : num = 0; break;
+					case "asteroids_b" : num = 1; break;
+					case "asteroids_c" : num = 2; break;
+				}
+				//!
+				asteroids.groups[num].forEach(el=>el.remove())
+				let  x ,  y ,  z , obj, scale_x , scale_y , rotate , 
+				    rx , ry , rz , check
+				for (let i = 0 ; i < 7; i++) {
+					for (let j = 0; j < 15; j+=2) {
+						check = Math.floor(Math.random()*2);
+						if (check == 1) {
+							rx = Math.random()
+							ry = Math.random()
+							rz = Math.random()
+							x = j - 7 + rx
+							y = i - 3 + ry
+							obj = Math.ceil(Math.random()*5)
+							scale_x = Math.random()*2+0.5
+							scale_y = Math.random()*2+0.5
+							rotate = Math.random()*5
+							let temp = asteroids.sprite[obj].clone()
+							    temp.rotation.y = rotate
+							    temp.position.set( x , y , rz * 10)
+							    temp.scale.set( scale_x , scale_y , 1)
+							    asteroids.groups[num].add(temp)
+						}
+					}
+				}
 
+	},
+	move     : {
+		  check : false,
+		  start : function () {
+				asteroids.move.check = true
+				let timer = setInterval( function () {
+					asteroids.move.check == false ? clearInterval(timer) : false
+					asteroids.groups.forEach( el => {
+						if ( el.position.z < 5 ) {
+							 el.position.z += 0.5 
+						} else {
+							 el.position.z = -14
+							 asteroids.refill(el.name)
+						}		
+					});
+				},1000/12)
+		        }
+		 }
+}
+
+//set
+earth    .build()
+stars    .build()
+asteroids.build()
+//
 //show
 let loaded = setInterval( function () {
 	if(earth.loaded == true &&
-	   stars.loaded == true    ) {		
+	   stars.loaded == true && 
+	   asteroids.loaded == true ) {		
 		//
 		console.log(scene)
 		console.log(earth)
 		console.log(stars)
+		console.log(asteroids)
 		//
 		earth.rotate.start()
 		stars.move.start()
+		asteroids.move.start()
 		clearInterval(loaded)
+		animate()
 		show()
 	}
 },500)
@@ -188,6 +336,8 @@ function show() {
 	console.log("start")
 }
 
+//
+//animate
 const animate = function () {
 	requestAnimationFrame( animate );
 
@@ -195,7 +345,7 @@ const animate = function () {
 };
 
 animate();
-
+//
 window.addEventListener( 'resize', onWindowResize, false );
 
 function onWindowResize(){
@@ -206,5 +356,3 @@ function onWindowResize(){
     renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
-
-export { scene }
