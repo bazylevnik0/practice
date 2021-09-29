@@ -108,33 +108,34 @@ var stars = {
 				    rx , ry , rz , check
 				for (let i = 0 ; i < 28; i+=4) {
 					for (let j = 0; j < 60; j+=4) {
-						check = Math.floor(Math.random()*2);
-						if (check == 1) {
-							rx = Math.random()
-							ry = Math.random()
-							rz = Math.random()
-							x = j - 28 + rx
-							y = i - 12 + ry
-							let temp_a = stars.sprite.clone()
-							    temp_a.position.x = x
-							    temp_a.position.y = y
-							    temp_a.position.z = rz * 10
-							    stars.groups[0].add(temp_a)
-							x *= (-1)
-							y *= (-1)
-							let temp_b = stars.sprite.clone()
-							    temp_b.position.x = x
-							    temp_b.position.y = y
-							    temp_b.position.z = rz * 10 * (-1)
-							    stars.groups[1].add(temp_b)
-							x *= (-1)
-							y *= (-1)
-							let temp_c = stars.sprite.clone()
-							    temp_c.position.x = x
-							    temp_c.position.y = y
-							    temp_c.position.z = rz * 10 * (-1)
-							    stars.groups[2].add(temp_c)
-						}
+							check = Math.floor(Math.random()*2);
+							if (check == 1) {
+								rx = Math.random()
+								ry = Math.random()
+								rz = Math.random()
+								x = j - 28 + rx
+								y = i - 12 + ry
+								let temp_a = stars.sprite.clone()
+								    temp_a.position.x = x
+								    temp_a.position.y = y
+								    temp_a.position.z = rz * 10
+								    stars.groups[0].add(temp_a)
+								x *= (-1)
+								y *= (-1)
+								let temp_b = stars.sprite.clone()
+								    temp_b.position.x = x
+								    temp_b.position.y = y
+								    temp_b.position.z = rz * 10 * (-1)
+								    stars.groups[1].add(temp_b)
+								x *= (-1)
+								y *= (-1)
+								let temp_c = stars.sprite.clone()
+								    temp_c.position.x = x
+								    temp_c.position.y = y
+								    temp_c.position.z = rz * 10 * (-1)
+								    stars.groups[2].add(temp_c)
+							}
+
 					}
 				}
 				stars.groups[0].name = "stars_a"
@@ -261,32 +262,48 @@ var asteroids = {
 					case "asteroids_b" : num = 1; break;
 					case "asteroids_c" : num = 2; break;
 				}
-				//!
-				asteroids.groups[num].forEach(el=>el.remove())
+				scene.children[num+1].children.forEach(el=>{el.remove()})
+				scene.children[num+1] = new THREE.Group();
+				scene.children[num+1].name = name
+				asteroids.groups[num] = scene.children[num+1]
+				asteroids.groups[num].position.z = -14
 				let  x ,  y ,  z , obj, scale_x , scale_y , rotate , 
 				    rx , ry , rz , check
-				for (let i = 0 ; i < 7; i++) {
-					for (let j = 0; j < 15; j+=2) {
-						check = Math.floor(Math.random()*2);
-						if (check == 1) {
-							rx = Math.random()
-							ry = Math.random()
-							rz = Math.random()
-							x = j - 7 + rx
-							y = i - 3 + ry
-							obj = Math.ceil(Math.random()*5)
-							scale_x = Math.random()*2+0.5
-							scale_y = Math.random()*2+0.5
-							rotate = Math.random()*5
-							let temp = asteroids.sprite[obj].clone()
-							    temp.rotation.y = rotate
-							    temp.position.set( x , y , rz * 10)
-							    temp.scale.set( scale_x , scale_y , 1)
-							    asteroids.groups[num].add(temp)
-						}
+				for (let i = 0 ; i < 7; i+=2) {
+					for (let j = 0; j < 15; j+=Math.ceil(Math.random()*3)) {
+						if ( j !== 7 ) {
+							j !== 6
+							check = Math.floor(Math.random()*2);
+							if (check == 1) {
+								rx = Math.random()
+								ry = Math.random()
+								rz = Math.random()
+								x = j - 7 + rx
+								y = i - 3 + ry
+								obj = Math.ceil(Math.random()*5)
+								scale_x = Math.random()*2+1
+								scale_y = Math.random()*2+1	
+								rotate = Math.random()*2*Math.PI
+								let temp = asteroids.sprite[obj].clone()
+								    temp.material.rotation = rotate
+								    temp.position.set( x , y , rz * 5)
+								    temp.show = function (local,x,y) {
+									let local_x = x
+									let local_y = y
+									local.scale.set(x/4,y/4,1)
+								
+									this.timer = setInterval( function() {
+										if ( local.scale.x < x ) {
+											local.scale.set( local.scale.x += 0.025 ,  local.scale.y += 0.025 , 1)
+										} else clearInterval(this.timer)
+								 	   } ,50)
+								    }
+								    temp.show(temp,scale_x,scale_y);
+								    scene.children[num+1].add(temp)
+							}
+					       }
 					}
 				}
-
 	},
 	move     : {
 		  check : false,
@@ -296,7 +313,7 @@ var asteroids = {
 					asteroids.move.check == false ? clearInterval(timer) : false
 					asteroids.groups.forEach( el => {
 						if ( el.position.z < 5 ) {
-							 el.position.z += 0.5 
+							 el.position.z += 1 
 						} else {
 							 el.position.z = -14
 							 asteroids.refill(el.name)
@@ -326,6 +343,12 @@ let loaded = setInterval( function () {
 		earth.rotate.start()
 		stars.move.start()
 		asteroids.move.start()
+
+		//step 1
+
+		//step 2
+
+		//step 3
 		clearInterval(loaded)
 		animate()
 		show()
