@@ -21,6 +21,8 @@ document.body.appendChild( renderer.domElement );
 
 camera.position.z = 5;
 
+var timers = []
+
 //load
 //earth
 var earth = {
@@ -74,7 +76,7 @@ var earth = {
 		       }
 		 }
 }
-
+	
 //stars
 var stars = {
 	loaded   : false,
@@ -162,7 +164,7 @@ var stars = {
 		 }
 }
 
-//asteroids
+//asteroids	
 var asteroids = {
 	loaded    : false,
 	map       : [],
@@ -233,9 +235,9 @@ var asteroids = {
 							    asteroids.groups[1].add(temp_b)
 							x *= (-1)
 							y *= (-1)
-							scale_x = Math.random()*2
-							scale_y = Math.random()*2
-							rotate = Math.random()*5
+							scale_x = Math.random()*2+1
+							scale_y = Math.random()*2+1
+							rotate = Math.random()*2*Math.PI
 							obj = Math.ceil(Math.random()*5)
 							let temp_c = asteroids.sprite[obj].clone()
 							    temp_c.rotation.x = rotate		
@@ -262,11 +264,13 @@ var asteroids = {
 					case "asteroids_b" : num = 1; break;
 					case "asteroids_c" : num = 2; break;
 				}
-				scene.children[num+1].children.forEach(el=>{el.remove()})
-				scene.children[num+1] = new THREE.Group();
-				scene.children[num+1].name = name
-				asteroids.groups[num] = scene.children[num+1]
-				asteroids.groups[num].position.z = -14
+				scene.children.forEach( (child) => {
+					if (child.name == name) {
+						child.clear()
+						child =  new THREE.Group();
+						child.name = name
+					} 
+				})
 				let  x ,  y ,  z , obj, scale_x , scale_y , rotate , 
 				    rx , ry , rz , check
 				for (let i = 0 ; i < 7; i+=2) {
@@ -291,15 +295,15 @@ var asteroids = {
 									let local_x = x
 									let local_y = y
 									local.scale.set(x/4,y/4,1)
-								
-									this.timer = setInterval( function() {
-										if ( local.scale.x < x ) {
+									local.timer = setInterval( function() {
+										if ( local.scale.x < x) {
 											local.scale.set( local.scale.x += 0.025 ,  local.scale.y += 0.025 , 1)
-										} else clearInterval(this.timer)
+										} else clearInterval(local.timer)
+										if ( local.position.z > 4 ) clearInterval(local.timer)
 								 	   } ,50)
 								    }
 								    temp.show(temp,scale_x,scale_y);
-								    scene.children[num+1].add(temp)
+								    asteroids.groups[num].add(temp)
 							}
 					       }
 					}
@@ -323,11 +327,146 @@ var asteroids = {
 		        }
 		 }
 }
+//main stone
+var   stone = {
+	map      : undefined,
+	material : undefined,
+	sprite   : undefined,
+	build    : function() {
+			function createMap() {
+				return new Promise((resolve ,reject) =>{
+					stone.map = new THREE.TextureLoader().load( 'asteroids/main.png' );
+					let timer = setInterval( ()=>{
+						if(stone.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+			}
+			async function createMaterial() {
+			await createMap() 
+				return new Promise((resolve ,reject) => {
+					stone.material = new THREE.SpriteMaterial( { map: stone.map } )
+					let timer = setInterval( ()=>{
+						if(stone.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+
+			}
+			async function createSprite() {
+			await createMaterial()
+				stone.sprite = new THREE.Sprite( stone.material );
+				stone.sprite.scale.set( 6.25 , 3.75 , 1)
+				scene.add(stone.sprite)
+			}
+			createSprite()
+	}
+}
+
+
+//symbols
+var symbols = {
+		text	   : {
+				map: undefined,
+				material: undefined,
+				sprite : undefined,
+				build  : function () {
+						
+			function createMap() {
+				return new Promise((resolve ,reject) =>{
+					symbols.text.map = new THREE.TextureLoader().load( 'symbols/text.png' );
+					let timer = setInterval( ()=>{
+						if(symbols.text.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+			}
+			async function createMaterial() {
+			await createMap() 
+				return new Promise((resolve ,reject) => {
+					symbols.text.material = new THREE.SpriteMaterial( { map: symbols.text.map } )
+					let timer = setInterval( ()=>{
+						if(symbols.text.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+
+			}
+			async function createSprite() {
+			await createMaterial()
+				symbols.text.sprite = new THREE.Sprite( symbols.text.material );
+				symbols.text.sprite.scale.set( 15.25 , 6.75 , 1)
+				scene.add(symbols.text.sprite)
+			}
+			createSprite()
+				       }
+			      },
+		logo_all   : {
+				map: undefined,
+				material: undefined,
+				sprite : undefined,
+				build  : function () {
+						
+			function createMap() {
+				return new Promise((resolve ,reject) =>{
+					symbols.logo_all.map = new THREE.TextureLoader().load( 'symbols/logo_all.png' );
+					let timer = setInterval( ()=>{
+						if(symbols.logo_all.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+			}
+			async function createMaterial() {
+			await createMap() 
+				return new Promise((resolve ,reject) => {
+					symbols.logo_all.material = new THREE.SpriteMaterial( { map: symbols.logo_all.map } )
+					let timer = setInterval( ()=>{
+						if(symbols.logo_all.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+
+			}
+			async function createSprite() {
+			await createMaterial()
+				symbols.logo_all.sprite = new THREE.Sprite( symbols.logo_all.material );
+				symbols.logo_all.sprite.scale.set( 8 , 2 , 1)
+				scene.add(symbols.logo_all.sprite)
+			}
+			createSprite()
+				       }
+			     },
+		logo_split : {},
+		build : function() {	
+symbols.text.build()	
+symbols.logo_all.build()
+		}
+}
+/*
+const sprite_logo_full = new THREE.TextureLoader().load( 'logo_4.png' );
+const material_logo = new THREE.SpriteMaterial( { map: map_sprite_4 } )
+var logo_sprite_1 = new THREE.Sprite( material_sprite_1 );
+*/
 
 //set
-earth    .build()
 stars    .build()
 asteroids.build()
+stone    .build()
+earth    .build()
+symbols.build()
+
 //
 //show
 let loaded = setInterval( function () {
