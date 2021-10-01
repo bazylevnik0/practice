@@ -448,12 +448,69 @@ var symbols = {
 			createSprite()
 				       }
 			     },
-		logo_split : {},
+		logo_split : {
+			logo_r : new SimpleSprite("logo_r"),
+			logo_e : new SimpleSprite("logo_e"),
+			logo_a : new SimpleSprite("logo_a"),
+			logo_l : new SimpleSprite("logo_l"),
+			logo_red : new SimpleSprite("logo_red"),
+			logo_green : new SimpleSprite("logo_green"),
+			logo_blue : new SimpleSprite("logo_blue")
+		},
 		build : function() {	
+
 symbols.text.build()	
 symbols.logo_all.build()
+symbols.logo_split.logo_r.build(this)
+symbols.logo_split.logo_e.build(this)
+symbols.logo_split.logo_a.build(this)
+symbols.logo_split.logo_l.build(this)
+symbols.logo_split.logo_red.build(this)
+symbols.logo_split.logo_green.build(this)
+symbols.logo_split.logo_blue.build(this)
 		}
 }
+
+
+function SimpleSprite(name) {
+	this.map      = undefined;
+	this.material = undefined;
+	this.sprite   = undefined;
+	this.build    = function (obj) {
+			function createMap() {
+				return new Promise((resolve ,reject) =>{
+					obj.map = new THREE.TextureLoader().load( 'symbols/'+name+'.png' );
+					let timer = setInterval( ()=>{
+						if(obj.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+			}
+			async function createMaterial() {
+			await createMap() 
+				return new Promise((resolve ,reject) => {
+					obj.material = new THREE.SpriteMaterial( { map: obj.map } )
+					let timer = setInterval( ()=>{
+						if(obj.map!==undefined) {
+							clearInterval(timer)
+							resolve(true)
+						}
+					},100)
+				})
+
+			}
+			async function createSprite() {
+			await createMaterial()
+				obj.sprite = new THREE.Sprite( obj.material );
+				obj.sprite.scale.set( 8 , 2 , 1)
+				scene.add(obj.sprite)
+			}
+			createSprite()
+			}
+}
+
 /*
 const sprite_logo_full = new THREE.TextureLoader().load( 'logo_4.png' );
 const material_logo = new THREE.SpriteMaterial( { map: map_sprite_4 } )
@@ -464,8 +521,8 @@ var logo_sprite_1 = new THREE.Sprite( material_sprite_1 );
 stars    .build()
 asteroids.build()
 stone    .build()
-earth    .build()
 symbols.build()
+earth    .build()
 
 //
 //show
@@ -518,3 +575,4 @@ function onWindowResize(){
     renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
+
