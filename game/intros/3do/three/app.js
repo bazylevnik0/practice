@@ -370,6 +370,7 @@ var   stone = {
 
 //symbols
 var symbols = {
+		loaded     : false,
 		text	   : {
 				map: undefined,
 				material: undefined,
@@ -449,30 +450,43 @@ var symbols = {
 				       }
 			     },
 		logo_split : {
-			logo_r : new SimpleSprite("logo_r"),
-			logo_e : new SimpleSprite("logo_e"),
-			logo_a : new SimpleSprite("logo_a"),
-			logo_l : new SimpleSprite("logo_l"),
-			logo_red : new SimpleSprite("logo_red"),
-			logo_green : new SimpleSprite("logo_green"),
-			logo_blue : new SimpleSprite("logo_blue")
+			logo_r     : new SimpleSymbolSprite("logo_r"),
+			logo_e     : new SimpleSymbolSprite("logo_e"),
+			logo_a     : new SimpleSymbolSprite("logo_a"),
+			logo_l     : new SimpleSymbolSprite("logo_l"),
+			logo_red   : new SimpleSymbolSprite("logo_red"),
+			logo_green : new SimpleSymbolSprite("logo_green"),
+			logo_blue  : new SimpleSymbolSprite("logo_blue")
 		},
 		build : function() {	
 
 symbols.text.build()	
 symbols.logo_all.build()
-symbols.logo_split.logo_r.build(this)
-symbols.logo_split.logo_e.build(this)
-symbols.logo_split.logo_a.build(this)
-symbols.logo_split.logo_l.build(this)
-symbols.logo_split.logo_red.build(this)
-symbols.logo_split.logo_green.build(this)
-symbols.logo_split.logo_blue.build(this)
+symbols.logo_split.logo_r    .build(symbols.logo_split.logo_r)
+symbols.logo_split.logo_e    .build(symbols.logo_split.logo_e)
+symbols.logo_split.logo_a    .build(symbols.logo_split.logo_a)
+symbols.logo_split.logo_l    .build(symbols.logo_split.logo_l)
+symbols.logo_split.logo_red  .build(symbols.logo_split.logo_red)
+symbols.logo_split.logo_green.build(symbols.logo_split.logo_green)
+symbols.logo_split.logo_blue .build(symbols.logo_split.logo_blue)
+let check = setInterval( function () {
+		if(symbols.loaded == true) {
+			clearInterval(check)
+		} else {
+			let complete = true
+			for( let value in symbols.logo_split){
+				complete = complete && symbols.logo_split[value].loaded
+			} 
+			complete == true ? symbols.loaded = true : false
+		}
+	},100)
 		}
 }
 
 
-function SimpleSprite(name) {
+
+function SimpleSymbolSprite(name) {
+	this.loaded   = false;
 	this.map      = undefined;
 	this.material = undefined;
 	this.sprite   = undefined;
@@ -504,55 +518,114 @@ function SimpleSprite(name) {
 			async function createSprite() {
 			await createMaterial()
 				obj.sprite = new THREE.Sprite( obj.material );
-				obj.sprite.scale.set( 8 , 2 , 1)
+				if(name == "logo_red"   ||
+				   name == "logo_green" ||
+				   name == "logo_blue"     ) {
+					obj.sprite.scale.set( 0.35 , 0.35 , 1)
+				} else  obj.sprite.scale.set( 1.5  , 1.15 , 1)
 				scene.add(obj.sprite)
 			}
 			createSprite()
+			this.loaded = true;
 			}
 }
-
-/*
-const sprite_logo_full = new THREE.TextureLoader().load( 'logo_4.png' );
-const material_logo = new THREE.SpriteMaterial( { map: map_sprite_4 } )
-var logo_sprite_1 = new THREE.Sprite( material_sprite_1 );
-*/
 
 //set
 stars    .build()
 asteroids.build()
 stone    .build()
-symbols.build()
 earth    .build()
+symbols.build()
 
-//
+
+
+
 //show
 let loaded = setInterval( function () {
-	if(earth.loaded == true &&
-	   stars.loaded == true && 
-	   asteroids.loaded == true ) {		
+	if(earth.loaded     == true &&
+	   stars.loaded     == true && 
+	   asteroids.loaded == true &&
+	   symbols.loaded   == true   ) {		
 		//
 		console.log(scene)
-		console.log(earth)
-		console.log(stars)
-		console.log(asteroids)
 		//
 		earth.rotate.start()
 		stars.move.start()
 		asteroids.move.start()
 
-		//step 1
-
-		//step 2
-
-		//step 3
 		clearInterval(loaded)
+		scene.children.forEach(el => el.visible = false)
 		animate()
 		show()
 	}
 },500)
 
 function show() {
-	console.log("start")
+	console.log("show")	
+      //step 1
+	function step1a() {
+		return new Promise ((resolve , reject)=>{
+			//camera set to left
+			//show stars
+			stars.groups[0].visible = true;
+			stars.groups[1].visible = true;
+			stars.groups[2].visible = true;
+			//camera rotate
+			setTimeout( ()=>{
+				let timer = setInterval(function() {
+					if(camera.rotation.y < 0.5){
+						camera.rotation.y += 0.0025
+					} else {
+						clearInterval(timer)
+						resolve(true)
+					}
+				},10)
+			},2000);
+		})
+ 	}
+	async function step1b() {
+	await step1a()
+		return new Promise ((resolve , reject)=>{
+			//show earth
+			earth.sprite.position.set(3,0,)
+			earth.sprite.scale.set(0.25,0.25)
+			earth.sprite.visible = true
+			//earth and camera rotate
+			let earth_to_left  = true
+			let earth_to_right = false
+			let x , y , angle = 45
+			let timer = setInterval(function() {
+				camera.rotation.y > 0 ? camera.rotation.y -= 0.001 : false
+				x = Math.cos((angle * Math.PI)/180)*9+2
+				y = Math.sin((angle * Math.PI)/180)*3+0
+				earth.sprite.position.set(x,y,0)
+				earth.sprite.scale.set(	earth.sprite.scale.x+=0.01 , earth.sprite.scale.y+=0.01 , 0)
+				angle+=0.5
+				if(angle>360){
+					clearInterval(timer)
+					resolve(true)
+				}
+			},10);
+		})
+	}
+	async function step1 () {
+	await step1b()
+		console.log("step1")
+	}
+	step1()
+	//step 2
+	let logo_r = symbols.logo_split.logo_r.sprite
+	let logo_e = symbols.logo_split.logo_e.sprite
+	let logo_a = symbols.logo_split.logo_a.sprite
+	let logo_l = symbols.logo_split.logo_l.sprite
+
+	let logo_red   = symbols.logo_split.logo_red.sprite
+	let logo_green = symbols.logo_split.logo_green.sprite
+	let logo_blue  = symbols.logo_split.logo_blue.sprite
+
+
+	//step 3
+
 }
 
 //
