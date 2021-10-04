@@ -456,7 +456,36 @@ var symbols = {
 			logo_l     : new SimpleSymbolSprite("logo_l"),
 			logo_red   : new SimpleSymbolSprite("logo_red"),
 			logo_green : new SimpleSymbolSprite("logo_green"),
-			logo_blue  : new SimpleSymbolSprite("logo_blue")
+			logo_blue  : new SimpleSymbolSprite("logo_blue"),
+			move	   : {
+					check : false,
+					start : function () {
+						symbols.logo_split.move.check = true
+						for(let value in symbols.logo_split) {
+							if ( value !== "move") {
+								symbols.logo_split[value].sprite.position.set( Math.random()*14 -7 , Math.random()*6 - 3 , (-1) * (Math.random()*42) );
+								symbols.logo_split[value].sprite.material.rotation = Math.random()*Math.PI*2;
+							}
+						}
+						let timer = setInterval( function() {
+							
+							for(let value in symbols.logo_split) {
+								if ( value !== "move") {
+									symbols.logo_split[value].sprite.position.z += 0.25;
+									symbols.logo_split[value].sprite.material.rotation += 0.025;	
+									if ( symbols.logo_split[value].sprite.position.z > 3 ) {
+										symbols.logo_split[value].sprite.position.set( Math.random()*14 -7 , Math.random()*6 - 3 , -42  );
+										symbols.logo_split[value].sprite.material.rotation = Math.random()*Math.PI*2;
+									}
+								}
+							}
+
+
+
+						},25)
+						if ( symbols.logo_split.move.check = false ) clearInterval(timer)
+				        }
+				     }
 		},
 		build : function() {	
 
@@ -475,7 +504,9 @@ let check = setInterval( function () {
 		} else {
 			let complete = true
 			for( let value in symbols.logo_split){
-				complete = complete && symbols.logo_split[value].loaded
+				if(value !== "move"){
+					complete = complete && symbols.logo_split[value].loaded
+				}
 			} 
 			complete == true ? symbols.loaded = true : false
 		}
@@ -535,7 +566,7 @@ stars    .build()
 asteroids.build()
 stone    .build()
 earth    .build()
-symbols.build()
+symbols  .build()
 
 
 
@@ -552,11 +583,13 @@ let loaded = setInterval( function () {
 		earth.rotate.start()
 		stars.move.start()
 		asteroids.move.start()
+		symbols.logo_split.move.start()
 
 		clearInterval(loaded)
 		scene.children.forEach(el => el.visible = false)
 		animate()
 		show()
+
 	}
 },500)
 
@@ -610,9 +643,71 @@ function show() {
 	}
 	async function step1 () {
 	await step1b()
+		return new Promise((resolve, reject)=> {
+		//show asteroids
+		asteroids.groups[0].scale.set(0,0,1)
+		asteroids.groups[1].scale.set(0,0,1)
+		asteroids.groups[2].scale.set(0,0,1)
+	
+		asteroids.groups[0].visible = true;
+		asteroids.groups[1].visible = true;
+		asteroids.groups[2].visible = true;
+
+		let timer = setInterval( function () {			
+				asteroids.groups[0].scale.set(	asteroids.groups[0].scale.x += 0.025 , 	asteroids.groups[0].scale.y += 0.025 , 1)
+				asteroids.groups[1].scale.set(	asteroids.groups[1].scale.x += 0.025 , 	asteroids.groups[1].scale.y += 0.025 , 1)
+				asteroids.groups[2].scale.set(	asteroids.groups[2].scale.x += 0.025 , 	asteroids.groups[2].scale.y += 0.025 , 1)
+
+				asteroids.groups[0].scale.x >= 1 ? clearInterval(timer) : false
+		},50)
+		//show split symbols
+		setTimeout( function() {
+			for(let value in symbols.logo_split) {
+				value !== "move" ? symbols.logo_split[value].sprite.scale.set(0,0,1) : false
+			}
+			for(let value in symbols.logo_split) {
+				if ( value !== "move") {
+				symbols.logo_split[value].sprite.visible = true;
+				}
+			}
+			let timer_1 = setInterval( function () {	
+				for(let value in symbols.logo_split) {
+					if ( value !== "move") {
+						if ( value == "logo_red"   ||
+						     value == "logo_green" ||
+						     value == "logo_blue"    ) {
+							 symbols.logo_split[value].sprite.scale.x += 0.005	
+							 symbols.logo_split[value].sprite.scale.y += 0.005 
+						} else {
+						 	 symbols.logo_split[value].sprite.scale.x += 0.01	
+							 symbols.logo_split[value].sprite.scale.y += 0.01 
+						}
+					}
+				}	
+				symbols.logo_split.logo_a.sprite.scale.x >= 1 ? clearInterval(timer_1) : false 
+			},25)
+		},5000)
+		//hide asteroids & split symbols
+ 		setTimeout( function() {
+			for(let value in symbols.logo_split) {
+				value !== "move" ? symbols.logo_split[value].sprite.visible = false : false
+			}
+			asteroids.groups[0].visible = false;
+			asteroids.groups[1].visible = false;
+			asteroids.groups[2].visible = false;
+			let timer = setInterval( function() {
+				stars.groups[0].position.z += 0.05
+				stars.groups[1].position.z += 0.05
+				stars.groups[2].position.z += 0.05
+				stars.groups[0].scale.set( stars.groups[0].scale.x += 0.0025, stars.groups[0].scale.y += 0.0025 , 1)
+				stars.groups[1].scale.set( stars.groups[1].scale.x += 0.0025, stars.groups[1].scale.y += 0.0025 , 1)
+				stars.groups[2].scale.set( stars.groups[2].scale.x += 0.0025, stars.groups[2].scale.y += 0.0025 , 1)
+			},10)
+			setTimeout( ()=> { clearInterval(timer); resolve(true) }, 1000)
+		},19000)
+		})
 		console.log("step1")
 	}
-	step1()
 	//step 2
 	let logo_r = symbols.logo_split.logo_r.sprite
 	let logo_e = symbols.logo_split.logo_e.sprite
@@ -623,9 +718,12 @@ function show() {
 	let logo_green = symbols.logo_split.logo_green.sprite
 	let logo_blue  = symbols.logo_split.logo_blue.sprite
 
+	symbols.logo_split.move.check = false
+	async function step2() {
+	await step1()
 
-	//step 3
-
+	}
+	step2()
 }
 
 //
