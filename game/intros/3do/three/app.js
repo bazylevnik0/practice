@@ -479,11 +479,8 @@ var symbols = {
 									}
 								}
 							}
-
-
-
+							if ( symbols.logo_split.move.check == false ) clearInterval(timer)
 						},25)
-						if ( symbols.logo_split.move.check = false ) clearInterval(timer)
 				        }
 				     }
 		},
@@ -594,7 +591,7 @@ let loaded = setInterval( function () {
 },500)
 
 function show() {
-	console.log("show")	
+	console.log("show")
       //step 1
 	function step1a() {
 		return new Promise ((resolve , reject)=>{
@@ -641,7 +638,7 @@ function show() {
 			},10);
 		})
 	}
-	async function step1 () {
+	async function step1c () {
 	await step1b()
 		return new Promise((resolve, reject)=> {
 		//show asteroids
@@ -717,13 +714,132 @@ function show() {
 	let logo_red   = symbols.logo_split.logo_red.sprite
 	let logo_green = symbols.logo_split.logo_green.sprite
 	let logo_blue  = symbols.logo_split.logo_blue.sprite
+	
+	async function step2a() {
+	await step1c()
+		symbols.logo_split.move.check = false
+		return new Promise((resolve, reject)=> {
+			for(let value in symbols.logo_split) {
+				value !== "move" ? symbols.logo_split[value].sprite.visible = true : false
+				value !== "move" ? symbols.logo_split[value].sprite.position.z = 0 : false
+				if( value == "logo_red"   ||
+				    value == "logo_green" ||
+				    value == "logo_blue"    ) {
+						   symbols.logo_split[value].sprite.scale.set(0.25,0.25,1)
+				}
+			}
 
-	symbols.logo_split.move.check = false
-	async function step2() {
-	await step1()
-
+			let timer = setInterval( function() {
+				for(let value in symbols.logo_split) {
+					switch (value) {				//WRITE FUNCTION!
+						case "logo_r" : {
+							if( logo_r.material.rotation > 0.005 ) {
+						            logo_r.position.x < -1.5 ? 	logo_r.position.x += Math.abs((-1.5) - logo_r.position.x) / 100 : logo_r.position.x -= Math.abs((-1.5) -logo_r.position.x) / 100
+		           				    logo_r.position.y < 2.51 ? 	logo_r.position.y += Math.abs(2.5 - logo_r.position.y) / 100 : logo_r.position.y -= Math.abs(2.5 - logo_r.position.y) / 100
+							    logo_r.material.rotation -= logo_r.material.rotation/100
+							       logo_r.in_journey = true
+							} else logo_r.in_journey = false
+						} break;
+						case "logo_red" : {
+							if( logo_red.material.rotation > 0.01 ) {
+						            logo_red.position.x < -0.9 ? 	logo_red.position.x += Math.abs((-0.9) - logo_red.position.x) / 100 : logo_red.position.x -= Math.abs((-0.9) -logo_r.position.x) / 100
+		           				    logo_red.position.y < 2.51 ? 	logo_red.position.y += Math.abs(2.5 - logo_red.position.y) / 100 : logo_red.position.y -= Math.abs(2.5 - logo_r.position.y) / 100
+							    logo_red.material.rotation -= logo_red.material.rotation/100
+							       logo_red.in_journey = true
+							} else logo_red.in_journey = false
+						} break;
+						case "logo_e" : {
+							if( logo_e.material.rotation > 0.01 ) {
+						            logo_e.position.x < -0.2 ? 	logo_e.position.x += Math.abs((-0.2) - logo_e.position.x) / 100 : logo_e.position.x -= Math.abs((-0.2)-logo_e.position.x) / 100
+		           				    logo_e.position.y < 2.51 ? 	logo_e.position.y += Math.abs(2.5 - logo_e.position.y) / 100 : logo_e.position.y -= Math.abs(2.5 - logo_e.position.y) / 100
+							    logo_e.material.rotation -= logo_e.material.rotation/100
+					    		       logo_e.in_journey = true
+							} else logo_e.in_journey = false
+						} break;
+						case "logo_green" : {
+							if( logo_green.material.rotation > 0.01 ) {
+						            logo_green.position.x < 0.4 ? 	logo_green.position.x += Math.abs((0.4) - logo_green.position.x) / 100 : logo_green.position.x -= Math.abs((0.4)-logo_e.position.x) / 100
+		           				    logo_green.position.y < 2.51 ? 	logo_green.position.y += Math.abs(2.5 - logo_green.position.y) / 100 : logo_green.position.y -= Math.abs(2.5 - logo_e.position.y) / 100
+							    logo_green.material.rotation -= logo_green.material.rotation/100
+					    		       logo_green.in_journey = true
+							} else logo_green.in_journey = false
+						} break;
+						case "logo_a" : {
+							if( logo_a.material.rotation > 0.01 ) {
+						            logo_a.position.x < 1.0 ? 	logo_a.position.x += Math.abs((1.0) - logo_a.position.x) / 100 : logo_a.position.x -= Math.abs((1.0)-logo_a.position.x) / 100
+		           				    logo_a.position.y < 2.51 ? 	logo_a.position.y += Math.abs(2.5 - logo_a.position.y) / 100 : logo_a.position.y -= Math.abs(2.5 - logo_a.position.y) / 100
+							    logo_a.material.rotation -= logo_a.material.rotation/100
+					    		       logo_a.in_journey = true
+							} else logo_a.in_journey = false
+						} break;
+						case "logo_blue" : {
+							if( logo_blue.material.rotation > 0.01 ) {
+						            logo_blue.position.x < 1.5 ? 	logo_blue.position.x += Math.abs((1.5) - logo_blue.position.x) / 100 : logo_blue.position.x -= Math.abs((1.5)-logo_a.position.x) / 100
+		           				    logo_blue.position.y < 2.51 ? 	logo_blue.position.y += Math.abs(2.5 - logo_blue.position.y) / 100 : logo_blue.position.y -= Math.abs(2.5 - logo_a.position.y) / 100
+							    logo_blue.material.rotation -= logo_blue.material.rotation/100
+					    		       logo_blue.in_journey = true
+							} else logo_blue.in_journey = false
+						} break;
+						case "logo_l" : {
+							if( logo_l.material.rotation > 0.01 ) {
+						            logo_l.position.x < 2.2 ? 	logo_l.position.x += Math.abs((2.2) - logo_l.position.x) / 100 : logo_l.position.x -= Math.abs((2.2)-logo_l.position.x) / 100
+		           				    logo_l.position.y < 2.51 ? 	logo_l.position.y += Math.abs(2.5 - logo_l.position.y) / 100 : logo_l.position.y -= Math.abs(2.5 - logo_l.position.y) / 100
+							    logo_l.material.rotation -= logo_l.material.rotation/100
+					    		       logo_l.in_journey = true
+							} else logo_l.in_journey = false
+						} break;
+	
+						case "move" : false; break;
+					}
+					
+					let check = 0
+					for(let value in symbols.logo_split) {
+						if (value !== "move") {
+							check += symbols.logo_split[value].in_journey
+						}
+					}
+					if (check == 0) {
+						clearInterval(timer)
+						resolve(true)
+					}
+				}
+				/*
+				logo_r.position    .set(-1.5 , 2.5 , 0)
+				logo_red.position  .set(-0.9 , 2.5 , 0)
+				logo_e.position    .set(-0.2 , 2.5 , 0)
+				logo_green.position.set( 0.4 , 2.5 , 0)
+				logo_a.position    .set( 1.0 , 2.5 , 0)
+				logo_blue.position .set( 1.5 , 2.5 , 0)
+				logo_l.position    .set( 2.2 , 2.5 , 0)
+				logo_r.material.rotation = logo_e.material.rotation = logo_a.material.rotation = logo_l.material.rotation = 0
+				logo_red.material.rotation = logo_green.material.rotation = logo_blue.material.rotation = 0
+				*/
+			},25)
+		})
 	}
-	step2()
+	async function step2b() {
+	await step2a()
+		return new Promise((resolve, reject)=> {
+			resolve(true)
+		})
+	}
+	async function step2c() {
+	await step2b()
+		return new Promise((resolve, reject)=> {
+			resolve(true)
+		})
+	}
+	async function step2d() {
+	await step2c()
+		return new Promise((resolve, reject)=> {
+			resolve(true)
+		})
+	}
+	async function run() {
+	await step2d()
+		console.log("end")
+	}
+	run()
 }
 
 //
