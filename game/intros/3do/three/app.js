@@ -667,7 +667,7 @@ function show() {
 				symbols.logo_split[value].sprite.visible = true;
 				}
 			}
-			let timer_1 = setInterval( function () {	
+			let timer = setInterval( function () {	
 				for(let value in symbols.logo_split) {
 					if ( value !== "move") {
 						if ( value == "logo_red"   ||
@@ -681,7 +681,7 @@ function show() {
 						}
 					}
 				}	
-				symbols.logo_split.logo_a.sprite.scale.x >= 1 ? clearInterval(timer_1) : false 
+				symbols.logo_split.logo_a.sprite.scale.x >= 1 ? clearInterval(timer) : false 
 			},25)
 		},5000)
 		//hide asteroids & split symbols
@@ -726,113 +726,96 @@ function show() {
 				    value == "logo_green" ||
 				    value == "logo_blue"    ) {
 						   symbols.logo_split[value].sprite.scale.set(0.25,0.25,1)
+						   symbols.logo_split[value].sprite.visible = false
 				}
 			}
 
+			function journey (obj,pos) {
+				obj.position.x !== pos ? obj.position.x += (pos - obj.position.x) / 25 : false
+		       		obj.position.y !== 2.5 ? obj.position.y += (2.5 - obj.position.y) / 25 : false
+				obj.material.rotation -= obj.material.rotation/25
+			} 
+			
+			let timer_count = 0
 			let timer = setInterval( function() {
 				for(let value in symbols.logo_split) {
-					switch (value) {				//WRITE FUNCTION!
-						case "logo_r" : {
-							if( logo_r.material.rotation > 0.005 ) {
-						            logo_r.position.x < -1.5 ? 	logo_r.position.x += Math.abs((-1.5) - logo_r.position.x) / 100 : logo_r.position.x -= Math.abs((-1.5) -logo_r.position.x) / 100
-		           				    logo_r.position.y < 2.51 ? 	logo_r.position.y += Math.abs(2.5 - logo_r.position.y) / 100 : logo_r.position.y -= Math.abs(2.5 - logo_r.position.y) / 100
-							    logo_r.material.rotation -= logo_r.material.rotation/100
-							       logo_r.in_journey = true
-							} else logo_r.in_journey = false
-						} break;
-						case "logo_red" : {
-							if( logo_red.material.rotation > 0.01 ) {
-						            logo_red.position.x < -0.9 ? 	logo_red.position.x += Math.abs((-0.9) - logo_red.position.x) / 100 : logo_red.position.x -= Math.abs((-0.9) -logo_r.position.x) / 100
-		           				    logo_red.position.y < 2.51 ? 	logo_red.position.y += Math.abs(2.5 - logo_red.position.y) / 100 : logo_red.position.y -= Math.abs(2.5 - logo_r.position.y) / 100
-							    logo_red.material.rotation -= logo_red.material.rotation/100
-							       logo_red.in_journey = true
-							} else logo_red.in_journey = false
-						} break;
-						case "logo_e" : {
-							if( logo_e.material.rotation > 0.01 ) {
-						            logo_e.position.x < -0.2 ? 	logo_e.position.x += Math.abs((-0.2) - logo_e.position.x) / 100 : logo_e.position.x -= Math.abs((-0.2)-logo_e.position.x) / 100
-		           				    logo_e.position.y < 2.51 ? 	logo_e.position.y += Math.abs(2.5 - logo_e.position.y) / 100 : logo_e.position.y -= Math.abs(2.5 - logo_e.position.y) / 100
-							    logo_e.material.rotation -= logo_e.material.rotation/100
-					    		       logo_e.in_journey = true
-							} else logo_e.in_journey = false
-						} break;
-						case "logo_green" : {
-							if( logo_green.material.rotation > 0.01 ) {
-						            logo_green.position.x < 0.4 ? 	logo_green.position.x += Math.abs((0.4) - logo_green.position.x) / 100 : logo_green.position.x -= Math.abs((0.4)-logo_e.position.x) / 100
-		           				    logo_green.position.y < 2.51 ? 	logo_green.position.y += Math.abs(2.5 - logo_green.position.y) / 100 : logo_green.position.y -= Math.abs(2.5 - logo_e.position.y) / 100
-							    logo_green.material.rotation -= logo_green.material.rotation/100
-					    		       logo_green.in_journey = true
-							} else logo_green.in_journey = false
-						} break;
-						case "logo_a" : {
-							if( logo_a.material.rotation > 0.01 ) {
-						            logo_a.position.x < 1.0 ? 	logo_a.position.x += Math.abs((1.0) - logo_a.position.x) / 100 : logo_a.position.x -= Math.abs((1.0)-logo_a.position.x) / 100
-		           				    logo_a.position.y < 2.51 ? 	logo_a.position.y += Math.abs(2.5 - logo_a.position.y) / 100 : logo_a.position.y -= Math.abs(2.5 - logo_a.position.y) / 100
-							    logo_a.material.rotation -= logo_a.material.rotation/100
-					    		       logo_a.in_journey = true
-							} else logo_a.in_journey = false
-						} break;
-						case "logo_blue" : {
-							if( logo_blue.material.rotation > 0.01 ) {
-						            logo_blue.position.x < 1.5 ? 	logo_blue.position.x += Math.abs((1.5) - logo_blue.position.x) / 100 : logo_blue.position.x -= Math.abs((1.5)-logo_a.position.x) / 100
-		           				    logo_blue.position.y < 2.51 ? 	logo_blue.position.y += Math.abs(2.5 - logo_blue.position.y) / 100 : logo_blue.position.y -= Math.abs(2.5 - logo_a.position.y) / 100
-							    logo_blue.material.rotation -= logo_blue.material.rotation/100
-					    		       logo_blue.in_journey = true
-							} else logo_blue.in_journey = false
-						} break;
-						case "logo_l" : {
-							if( logo_l.material.rotation > 0.01 ) {
-						            logo_l.position.x < 2.2 ? 	logo_l.position.x += Math.abs((2.2) - logo_l.position.x) / 100 : logo_l.position.x -= Math.abs((2.2)-logo_l.position.x) / 100
-		           				    logo_l.position.y < 2.51 ? 	logo_l.position.y += Math.abs(2.5 - logo_l.position.y) / 100 : logo_l.position.y -= Math.abs(2.5 - logo_l.position.y) / 100
-							    logo_l.material.rotation -= logo_l.material.rotation/100
-					    		       logo_l.in_journey = true
-							} else logo_l.in_journey = false
-						} break;
-	
-						case "move" : false; break;
+				    if( value !== "move" ) {
+					switch (value) {
+						case "logo_r"     :  journey(logo_r    ,(-1.5)); break;
+						case "logo_e"     :  journey(logo_e    ,(-0.2)); break;
+						case "logo_a"     :  journey(logo_a    ,( 1.0)); break;
+						case "logo_l"     :  journey(logo_l    ,( 2.2)); break;
+						case "logo_red"   :  journey(logo_red  ,(-0.9)); break;
+						case "logo_green" :  journey(logo_green,( 0.4)); break;
+						case "logo_blue"  :  journey(logo_blue ,( 1.5)); break;
 					}
-					
-					let check = 0
-					for(let value in symbols.logo_split) {
-						if (value !== "move") {
-							check += symbols.logo_split[value].in_journey
-						}
-					}
-					if (check == 0) {
-						clearInterval(timer)
-						resolve(true)
-					}
+				    }
 				}
-				/*
-				logo_r.position    .set(-1.5 , 2.5 , 0)
-				logo_red.position  .set(-0.9 , 2.5 , 0)
-				logo_e.position    .set(-0.2 , 2.5 , 0)
-				logo_green.position.set( 0.4 , 2.5 , 0)
-				logo_a.position    .set( 1.0 , 2.5 , 0)
-				logo_blue.position .set( 1.5 , 2.5 , 0)
-				logo_l.position    .set( 2.2 , 2.5 , 0)
-				logo_r.material.rotation = logo_e.material.rotation = logo_a.material.rotation = logo_l.material.rotation = 0
-				logo_red.material.rotation = logo_green.material.rotation = logo_blue.material.rotation = 0
-				*/
+				if (timer_count == 200) {
+					 var gendalf_say = "'I’m looking for someone to share in an adventure.' The Hobbit: An Unexpected Journey"
+					 clearInterval(timer)
+					 resolve(true) 
+				} else  timer_count++
 			},25)
 		})
 	}
+	var temp_group
 	async function step2b() {
 	await step2a()
 		return new Promise((resolve, reject)=> {
-			resolve(true)
+			temp_group = new THREE.Group()
+			for(let value in symbols.logo_split) {
+			    value !== "move" ? temp_group.add(symbols.logo_split[value].sprite) : false
+			}
+			scene.add(temp_group)
+			let timer = setInterval( function () {
+			    if ( temp_group.position.y > -6.5 ) {
+				 temp_group.position.y -= 0.05 
+				 temp_group.scale.set( temp_group.scale.x += 0.005 , temp_group.scale.y += 0.005 , 1) 
+			    } else {
+				 clearInterval(timer) 
+				 resolve(true)
+			    }
+
+			}, 25)
 		})
 	}
 	async function step2c() {
 	await step2b()
-		return new Promise((resolve, reject)=> {
-			resolve(true)
+		return new Promise((resolve, reject)=> {		
+			stone.sprite.position.z = -50
+			stone.sprite.material.rotation = 6 * Math.PI
+			stone.sprite.visible = true
+			let timer = setInterval( function () {
+				if ( stone.sprite.position.z < 0) {
+				     stone.sprite.position.z       += 50 / 100
+			             stone.sprite.material.rotation -= (6 * Math.PI) / 100
+				} else { 
+				     clearInterval(timer)
+				     resolve(true)
+				}
+			},25)
 		})
 	}
 	async function step2d() {
 	await step2c()
 		return new Promise((resolve, reject)=> {
-			resolve(true)
+			let timer = setInterval( function () {
+				if (temp_group.position.y < -5.75) {
+					temp_group.position.y += 0.05				 
+				 	temp_group.scale.set( temp_group.scale.x += 0.01 , temp_group.scale.y += 0.01 , 1) 
+				} else 	if (temp_group.position.y >= -5.75 && temp_group.position.y < -4.25 ) {
+					temp_group.position.y += 0.05				 
+				 	temp_group.scale.set( temp_group.scale.x -= 0.01 , temp_group.scale.y -= 0.01 , 1) 
+				} else {
+					symbols.text.sprite.visible = true
+					symbols.logo_split.logo_red.sprite.visible   = true
+					symbols.logo_split.logo_green.sprite.visible = true
+					symbols.logo_split.logo_blue.sprite.visible  = true
+					clearInterval(timer)
+					resolve(true)
+				}
+			},25)
 		})
 	}
 	async function run() {
