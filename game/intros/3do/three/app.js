@@ -1,4 +1,5 @@
 console.log( "app.js" );
+console.log( "sound from https://developer.dolby.com/tools-media/sample-media/sample-sound-library/" )
 import * as THREE         from 'https://cdn.skypack.dev/three@0.128.0/build/three.module.js';
 import { OBJLoader }      from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/loaders/OBJLoader.js'; 
 import { MTLLoader }      from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/loaders/MTLLoader.js'; 
@@ -7,12 +8,17 @@ import { RenderPass }     from 'https://cdn.skypack.dev/three@0.128.0/examples/j
 import { BloomPass }      from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/postprocessing/BloomPass.js'; 
 import { FilmPass }       from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/postprocessing/FilmPass.js';
 
-//import * as Tone from "https://cdn.skypack.dev/tone"
 
-//const synth = new Tone.Synth().toDestination();
-//synth.triggerAttackRelease("C4", "8n");
-
+let sound_in = new Audio("sounds/in.mp3");
+let sound_air = new Audio("sounds/air.mp3");
+let sound_air_ = new Audio("sounds/air_.mp3");
+let sound_shot = new Audio("sounds/shot.mp3");
+document.addEventListener( "click", function() {
+	    sound_in.play();
+})
+								
 const scene = new THREE.Scene();
+      scene.visible = false;
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 const renderer = new THREE.WebGLRenderer();
@@ -591,7 +597,9 @@ let loaded = setInterval( function () {
 },500)
 
 function show() {
-	console.log("show")
+	console.log("show")		
+        scene.visible = true;
+
       //step 1
 	function step1a() {
 		return new Promise ((resolve , reject)=>{
@@ -649,7 +657,11 @@ function show() {
 		asteroids.groups[0].visible = true;
 		asteroids.groups[1].visible = true;
 		asteroids.groups[2].visible = true;
-
+		sound_air.play();		
+		for (let i = 0 ; i < 10 ; i++) {
+			let r = Math.random()*7
+			setTimeout( ()=>sound_air.play(),r*1000)
+		}
 		let timer = setInterval( function () {			
 				asteroids.groups[0].scale.set(	asteroids.groups[0].scale.x += 0.025 , 	asteroids.groups[0].scale.y += 0.025 , 1)
 				asteroids.groups[1].scale.set(	asteroids.groups[1].scale.x += 0.025 , 	asteroids.groups[1].scale.y += 0.025 , 1)
@@ -660,6 +672,8 @@ function show() {
 		//show split symbols
 		setTimeout( function() {
 			for(let value in symbols.logo_split) {
+			sound_air.play();			
+			setTimeout( ()=>sound_air.play(),750)
 				value !== "move" ? symbols.logo_split[value].sprite.scale.set(0,0,1) : false
 			}
 			for(let value in symbols.logo_split) {
@@ -667,6 +681,12 @@ function show() {
 				symbols.logo_split[value].sprite.visible = true;
 				}
 			}
+			setTimeout( ()=>sound_air.play(),1000)
+			setTimeout( ()=>sound_air.play(),2000)
+			setTimeout( ()=>sound_air.play(),5000)
+			setTimeout( ()=>sound_air.play(),5000)
+			setTimeout( ()=>sound_air.play(),7500)
+			setTimeout( ()=>sound_air.play(),9000)
 			let timer = setInterval( function () {	
 				for(let value in symbols.logo_split) {
 					if ( value !== "move") {
@@ -686,6 +706,8 @@ function show() {
 		},5000)
 		//hide asteroids & split symbols
  		setTimeout( function() {
+			sound_air.play();			
+			setTimeout( ()=>sound_air.play(),500)
 			for(let value in symbols.logo_split) {
 				value !== "move" ? symbols.logo_split[value].sprite.visible = false : false
 			}
@@ -736,6 +758,7 @@ function show() {
 				obj.material.rotation -= obj.material.rotation/25
 			} 
 			
+			sound_air_.play()
 			let timer_count = 0
 			let timer = setInterval( function() {
 				for(let value in symbols.logo_split) {
@@ -782,6 +805,7 @@ function show() {
 	}
 	async function step2c() {
 	await step2b()
+		sound_shot.play()
 		return new Promise((resolve, reject)=> {		
 			stone.sprite.position.z = -50
 			stone.sprite.material.rotation = 6 * Math.PI
