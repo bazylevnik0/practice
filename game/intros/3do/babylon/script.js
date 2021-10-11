@@ -1,12 +1,7 @@
-const synth = new Tone.Synth().toDestination();
-synth.triggerAttackRelease("C4", "8n");
-
 scene.clearColor.r = 0
 scene.clearColor.g = 0
 scene.clearColor.b = 0
 
-
-//var box = BABYLON.MeshBuilder.CreateBox("box", {})
 
 //sounds
 let sound_in = new Audio("sounds/in.mp3");
@@ -17,6 +12,7 @@ document.addEventListener( "click", function() {
 	    sound_in.play();
 })
 
+//earth
 var earth = {
 	loaded   : false,
 	manager  : [],
@@ -63,17 +59,8 @@ var earth = {
 		  }
 }
 
-/*
-const sprite_manager = new BABYLON.SpriteManager("", "star.png", 1 , {width: 300, height: 300} , scene);
-const sprite         = new BABYLON.Sprite("", sprite_manager);
-      sprite.position.x = 10
-      sprite.position.y = 5
-      sprite.position.z = 100
-*/
 
 //stars
-
-
 var stars = {
 	loaded   : 0 ,
 	//this is grid , 10 x n for 3 groups:
@@ -142,7 +129,7 @@ var stars = {
 									stars.sprites[num][i][j].height  = 0.5
 									stars.checks[num].push([i,j])
 									last = [i,j]
-								}
+								} else  stars.managers[num][i][j] = undefined
 
 						}
 					}					
@@ -187,11 +174,233 @@ var stars = {
 }
 
 
-earth.build()
+//asteroids
+var asteroids = {
+	loaded   : false,
+	managers : {},
+	sprites  : {},
+	build	 : function() {
+			let last
+			for (let i = 0; i < 50; i++ ) { i==49 ? last = asteroids.add() : asteroids.add()   }
+			let timer = setInterval( function () {
+					if ( asteroids.sprites[last] !== undefined ) {
+						clearInterval(timer)
+						let i = 0 
+						for (let value in asteroids.sprites) {
+							asteroids.sprites[value].position.z += i * 5
+							if ( asteroids.sprites[value].position.x < 1  &&
+							     asteroids.sprites[value].position.x > -1    ) asteroids.sprites[value].position.x *= 10
+							if ( asteroids.sprites[value].position.y < 0.5  &&
+							     asteroids.sprites[value].position.y > -0.5    ) asteroids.sprites[value].position.y *= 10
+							i++
+						}
+						asteroids.loaded = true
+					} 
+			} , 100 );
+
+	},
+	add      : function() {			
+			let num = Math.floor(Math.random()*6)
+			let id  = (""+Math.random()).slice(2,)
+
+			function loadManager() {
+				return new Promise((resolve, reject) => {
+					asteroids.managers[id] = new BABYLON.SpriteManager("", "./asteroids/"+num+".png", 1 , {width: 465, height: 465} , scene);
+					let timer = setInterval( function () {
+						if ( asteroids.managers[id] !== undefined ) {
+							clearInterval(timer)
+							resolve(true)
+						} 
+					} , 100 );
+				})
+			}
+			async function createSprite() {
+ 	 		await loadManager()
+				asteroids.sprites[id] = new BABYLON.Sprite("asteroid_"+id, asteroids.managers[id]);
+				let  x ,  y , rx , ry , rangle , dir 
+				rx     = Math.random()
+				ry     = Math.random()
+				rangle = Math.random() * 2
+				x      = Math.random() * 14
+				y      = Math.random() * 6
+			
+				asteroids.sprites[id].position.z = 100 + (Math.random()*50)
+				dir = Math.floor(Math.random()*2); dir == 0 ? dir = (-1) : dir = 1
+				asteroids.sprites[id].position.x = (x - 7) + (dir * rx)  
+				dir = Math.floor(Math.random()*2); dir == 0 ? dir = (-1) : dir = 1
+				asteroids.sprites[id].position.y = (y - 3) + (dir * ry)
+				asteroids.sprites[id].angle = rangle * Math.PI 
+				asteroids.sprites[id].width  = Math.random() + 0.5 
+				asteroids.sprites[id].height = Math.random() + 0.5
+				 
+				let timer = setInterval( function () {
+					if ( asteroids.sprites[id] !== undefined ) {
+						clearInterval(timer)
+					} 
+				} , 100 );
+			}
+			createSprite()
+			return id	
+	},
+	move     : {
+		  check : false,
+		  start : function () {
+				asteroids.move.check = true
+				let timer = setInterval( function () {
+					asteroids.move.check == false ? clearInterval(timer) : false
+						for (let value in asteroids.sprites) {
+							if (asteroids.sprites[value].position.z < -5) {
+								asteroids.sprites[value].position.z += 100
+								asteroids.sprites[value].angle = Math.random() * (Math.PI*2)
+							} else  asteroids.sprites[value].position.z -= 2 
+						}
+				},100)
+		        }
+		 }
+}
+//stone 
+var stone = {
+	loaded   : false     ,
+	manager  : undefined ,
+	sprite   : undefined ,
+	build    : function() {
+			function loadManager() {
+				return new Promise((resolve, reject) => {
+					stone.manager = new BABYLON.SpriteManager("", "./asteroids/main.png", 1 , {width: 813, height: 516} , scene);
+					let timer = setInterval( function () {
+						if ( stone.manager !== undefined ) {
+							clearInterval(timer)
+							resolve(true)
+						} 
+					} , 100 );
+				})
+			}
+			async function createSprite() {
+ 	 		await loadManager()
+				stone.sprite = new BABYLON.Sprite("stone", stone.manager);
+				let timer = setInterval( function () {
+					if ( stone.sprite !== undefined ) {
+						stone.sprite.width  = 6
+						stone.sprite.height = 4
+						clearInterval(timer)
+						stone.loaded = true;
+					} 
+				} , 100 );
+			}
+			createSprite()
+		 }
+}	
+
+//symbols
+var symbols = {
+	text : {
+		loaded   : false     ,
+		manager  : undefined ,
+		sprite   : undefined ,
+		build    : function() {
+			function loadManager() {
+				return new Promise((resolve, reject) => {
+					symbols.text.manager = new BABYLON.SpriteManager("", "./symbols/text.png", 1 , {width: 1600, height: 900} , scene);
+					let timer = setInterval( function () {
+						if ( symbols.text.manager !== undefined ) {
+							clearInterval(timer)
+							resolve(true)
+						} 
+					} , 100 );
+				})
+			}
+			async function createSprite() {
+ 	 		await loadManager()
+				symbols.text.sprite = new BABYLON.Sprite("text", symbols.text.manager);
+				let timer = setInterval( function () {
+					if ( symbols.text.sprite !== undefined ) {
+						symbols.text.sprite.width  = 14
+						symbols.text.sprite.height = 7
+						clearInterval(timer)
+						symbols.text.loaded = true;
+					} 
+				} , 100 );
+			}
+			createSprite()
+		 }
+	},
+	logo : {
+		loaded: 0,
+		r     : new SimpleSymbolSprite("r"),
+		e     : new SimpleSymbolSprite("e"),
+		a     : new SimpleSymbolSprite("a"),
+		l     : new SimpleSymbolSprite("l"),
+		red   : new SimpleSymbolSprite("red"),
+		green : new SimpleSymbolSprite("green"),
+		blue  : new SimpleSymbolSprite("blue")
+	},
+	build : function () {
+		symbols.text.build()
+		symbols.logo.r.build()
+		symbols.logo.e.build()
+		symbols.logo.a.build()
+		symbols.logo.l.build()
+		symbols.logo.red.build()
+		symbols.logo.green.build()
+		symbols.logo.blue.build()
+	}
+}
+
+function SimpleSymbolSprite(name) {
+	this.name   =  name,
+	this.loaded  = false,
+	this.manager = undefined,
+	this.sprite  = undefined,
+	this.build   = function() {
+			let name = this.name
+			function loadManager() {
+				return new Promise((resolve, reject) => {
+					console.log(name.length)
+					if (name.length == 1) {
+					       symbols.logo[name].manager = new BABYLON.SpriteManager("", "./symbols/logo_"+name+".png", 1 , {width: 272, height: 191} , scene);
+					} else symbols.logo[name].manager = new BABYLON.SpriteManager("", "./symbols/logo_"+name+".png", 1 , {width: 53, height: 53} , scene);
+					let timer = setInterval( function () {
+						if ( symbols.logo[name].manager !== undefined ) {
+							clearInterval(timer)
+							resolve(true)
+						} 
+					} , 100 );
+				})
+			}
+			async function createSprite() {
+ 	 		await loadManager()
+				symbols.logo[name].sprite = new BABYLON.Sprite("logo"+name, symbols.logo[name].manager);
+				if (name.length == 1) {
+ 					 symbols.logo[name].sprite.width = 2
+ 					 symbols.logo[name].sprite.height = 2
+				} else {
+ 				 	 symbols.logo[name].sprite.width = 0.5
+ 					 symbols.logo[name].sprite.height = 0.5
+				}
+				let timer = setInterval( function () {
+					if ( symbols.logo[name].sprite !== undefined ) {
+						clearInterval(timer)
+						symbols.logo[name].loaded = true;
+						symbols.logo.loaded += symbols.logo[name].loaded
+						if (symbols.logo.loaded == 7) symbols.logo.loaded = true
+					} 
+				} , 100 );
+			}
+			createSprite()
+			
+	}
+}
 stars.build()
+asteroids.build()
+stone.build()
+earth.build()
+symbols.build()
+
+
 let timer = setInterval( function() {
 	if(earth.loaded == true) {
 		clearInterval(timer)
 		earth.rotate.start()
+		asteroids.move.start()
 	} else  false
 },100);
