@@ -4,8 +4,8 @@ scene.clearColor.b = 0
 
 
 //sounds
-let sound_in = new Audio("sounds/in.mp3");
-let sound_air = new Audio("sounds/air.mp3");
+let sound_in   = new Audio("sounds/in.mp3");
+let sound_air  = new Audio("sounds/air.mp3");
 let sound_air_ = new Audio("sounds/air_.mp3");
 let sound_shot = new Audio("sounds/shot.mp3");
 document.addEventListener( "click", function() {
@@ -56,7 +56,12 @@ var earth = {
 	setSprite : function setSprite(num) {
 			for (let i = 0; i < 22; i++) earth.sprite[i].isVisible = false  
 			earth.sprite[num].isVisible = true
-		  }
+		  },
+	visible   : function(log) {
+			if (log) {			
+				earth.sprite.forEach(el => el.isVisible = true)
+			} else	earth.sprite.forEach(el => el.isVisible = false)
+	}
 }
 
 
@@ -139,7 +144,6 @@ var stars = {
 							clearInterval(timer)
 							if (stars.loaded == 2 ) {
 							    stars.loaded = true 
-							    stars.move.start()
 							} else stars.loaded++
 						} 
 					} , 100 );
@@ -256,7 +260,11 @@ var asteroids = {
 						}
 				},100)
 		        }
-		 }
+		 },
+	hide   : function() {
+		 for(let v in asteroids.sprites) { asteroids.sprites[v].isVisible = false}
+	}
+
 }
 //stone 
 var stone = {
@@ -288,7 +296,12 @@ var stone = {
 				} , 100 );
 			}
 			createSprite()
-		 }
+		 },	
+	visible : function(log) {
+		if(log) { 
+			stone.sprite.isVisible = true
+		} else  stone.sprite.isVisible = false
+	}
 }	
 
 //symbols
@@ -343,6 +356,16 @@ var symbols = {
 		symbols.logo.red.build()
 		symbols.logo.green.build()
 		symbols.logo.blue.build()
+	},
+	visible   : function(log,obj) {
+			if (obj == "text" ) {
+				if (log)  symbols.text.sprite.isVisible = true
+				if (!log) symbols.text.sprite.isVisible = false		
+			} else {
+				if (log) {			
+					for(let value in symbols.logo ) { if (value!=="loaded") symbols.logo[value].sprite.isVisible = true}
+				} else	for(let value in symbols.logo ) { if (value!=="loaded") symbols.logo[value].sprite.isVisible = false}
+			}
 	}
 }
 
@@ -355,7 +378,6 @@ function SimpleSymbolSprite(name) {
 			let name = this.name
 			function loadManager() {
 				return new Promise((resolve, reject) => {
-					console.log(name.length)
 					if (name.length == 1) {
 					       symbols.logo[name].manager = new BABYLON.SpriteManager("", "./symbols/logo_"+name+".png", 1 , {width: 272, height: 191} , scene);
 					} else symbols.logo[name].manager = new BABYLON.SpriteManager("", "./symbols/logo_"+name+".png", 1 , {width: 53, height: 53} , scene);
@@ -390,6 +412,11 @@ function SimpleSymbolSprite(name) {
 			
 	}
 }
+
+//show
+scene.cameras[0].viewport.width  = 0
+scene.cameras[0].viewport.height = 0
+
 stars.build()
 asteroids.build()
 stone.build()
@@ -397,10 +424,246 @@ earth.build()
 symbols.build()
 
 
-let timer = setInterval( function() {
-	if(earth.loaded == true) {
-		clearInterval(timer)
-		earth.rotate.start()
-		asteroids.move.start()
+let loaded = setInterval( function() {
+	if(earth.loaded         == true && 
+	   asteroids.loaded     == true &&
+	   stone.loaded         == true &&
+	   symbols.text.loaded  == true &&
+	   symbols.logo.loaded  == true    ) {
+		clearInterval(loaded)
+		earth.visible(false)
+		stone.visible(false)
+		symbols.visible(false,"text")
+		symbols.visible(false,"logo")
+		show()
 	} else  false
 },100);
+
+
+
+function show() {
+	scene.cameras[0].viewport.width  = 1
+	scene.cameras[0].viewport.height = 1
+
+
+
+        //step 1
+	function step1a() {
+		return new Promise ((resolve , reject)=>{
+			scene.cameras[0].cameraRotation.y = -0.05	
+			stars.move.start()
+			setTimeout( ()=>{
+					scene.cameras[0].cameraRotation.y = 0.05
+					resolve(true)
+			},3000);
+		})
+	}
+	async function step1b() {
+	await step1a()	
+		return new Promise ((resolve , reject)=>{
+			earth.visible(true)
+			earth.rotate.start()
+			earth.sprite.forEach(el=>el.position.x = 8)
+			let earth_to_left  = true
+			let earth_to_right = false
+			let x , y , angle = 45
+			let timer = setInterval(function() {
+				x = Math.cos((angle * Math.PI)/180)*6+6
+				y = Math.sin((angle * Math.PI)/180)*3
+				earth.sprite.forEach(function(el){
+					el.position.x = x
+					el.position.y = y
+				})
+				earth.sprite.forEach(function(el){
+					el.width  += 0.01
+					el.height += 0.01
+				})
+				angle+=0.5
+				if(angle>360){
+					clearInterval(timer)
+					resolve(true)
+				}
+			},10);
+		})
+
+	}
+	var timer_logo
+	async function step1c () {
+	await step1b()
+		return new Promise((resolve, reject)=> {
+		//show asteroids
+		asteroids.move.start()
+		setTimeout( ()=>sound_air.play(), 5000)
+		for (let i = 0 ; i < 10 ; i++) {
+			let r = Math.random()*7 + 7
+			setTimeout( ()=>sound_air.play(),r*1000)
+		}
+		//show split symbols
+		setTimeout( function() {
+			symbols.visible(true,"logo")
+			for (let v in symbols.logo) { if (v !== "loaded") {
+				symbols.logo[v].sprite.position.z = 100 + (Math.random()*50) 
+				symbols.logo[v].sprite.position.x = Math.random()*14 - 7 	
+				symbols.logo[v].sprite.position.y = Math.random()*6  - 3
+				} 	
+			}
+			timer_logo = setInterval( function() {
+				for (let v in symbols.logo) { if (v !== "loaded") { 
+					if (symbols.logo[v].sprite.position.z > -5 ) {
+					    symbols.logo[v].sprite.position.z -= 3
+					    let dir = Math.floor(Math.random()*2)
+					    dir == 0 ? dir = -1 : dir = +1
+					    symbols.logo[v].sprite.angle += dir / 100
+					    if( symbols.logo[v].sprite.angle > 0 ) {
+						symbols.logo[v].sprite.angle += 0.02
+					    } else symbols.logo[v].sprite.angle -= 0.02
+				
+					} else {
+					    symbols.logo[v].sprite.position.z += 100
+					    symbols.logo[v].sprite.position.x = Math.random()*14 - 7 	
+					    symbols.logo[v].sprite.position.y = Math.random()*6  - 3
+					}
+					}
+				}
+			},50)
+
+		},7000)
+		//hide asteroids & split symbols
+ 		setTimeout( function() {
+			sound_air.play();			
+			setTimeout( ()=>sound_air.play(),500)
+			symbols.visible(false,"logo")
+			clearInterval(timer_logo)
+			asteroids.hide()
+			let timer_fov =setInterval( function() {
+				scene.cameras[0].fov > 0.5 ? scene.cameras[0].fov -= 0.005 : clearInterval(timer_fov) 
+			},25)
+			setTimeout( ()=> { clearInterval(timer_fov); resolve(true) }, 1000)
+		},19000)
+		})
+		console.log("step1")
+	}
+	//step 2
+	let logo_r = symbols.logo.r.sprite
+	let logo_e = symbols.logo.e.sprite
+	let logo_a = symbols.logo.a.sprite
+	let logo_l = symbols.logo.l.sprite
+
+	let logo_red   = symbols.logo.red.sprite
+	let logo_green = symbols.logo.green.sprite
+	let logo_blue  = symbols.logo.blue.sprite
+	async function step2a() {
+	await step1c()
+		return new Promise((resolve, reject)=> {
+			for(let value in symbols.logo) {
+				if (value!=="loaded") symbols.logo[value].sprite.position.z = 0 
+			}
+			symbols.visible(true,"logo")
+			function journey (obj,pos) {
+				obj.position.x !== pos ? obj.position.x += (pos - obj.position.x) / 25 : false
+		       		obj.position.y !== 2.5 ? obj.position.y += (2   - obj.position.y) / 25 : false
+				obj.angle -= obj.angle/25
+			} 
+			
+			sound_air_.play()	
+			symbols.logo.red.sprite.isVisible = false
+			symbols.logo.green.sprite.isVisible = false
+			symbols.logo.blue.sprite.isVisible = false
+		
+			let timer_count = 0
+			let timer = setInterval( function() {
+				for(let value in symbols.logo) {
+				    if( value !== "loaded" ) {
+					switch (value) {
+						case "r"     :  journey(logo_r    ,(-2.5)); break;
+						case "e"     :  journey(logo_e    ,( -0.5)); break;
+						case "a"     :  journey(logo_a    ,( 1.5)); break;
+						case "l"     :  journey(logo_l    ,( 3.75)); break;
+						case "red"   :  journey(logo_red  ,(-1.6)); break;
+						case "green" :  journey(logo_green,( 0.4)); break;
+						case "blue"  :  journey(logo_blue ,( 2.55)); break;
+					}
+				    }
+				}
+				if (timer_count == 200) {
+					 var gendalf_say = "'I’m looking for someone to share in an adventure.' The Hobbit: An Unexpected Journey"
+					 clearInterval(timer)
+					 resolve(true) 
+				} else  timer_count++
+			},25)
+		})
+	}
+	async function step2b() {
+	await step2a()
+		return new Promise((resolve, reject)=> {
+			let timer = setInterval( function () {
+			    if ( logo_r.position.y > -2 ) {
+				 for(let value in symbols.logo) {
+					if (value!=="loaded") {
+						symbols.logo[value].sprite.position.y -=0.05
+					} 
+				 }
+			    } else {
+				 clearInterval(timer) 
+				 resolve(true)
+			    }
+
+			}, 25)
+		})
+	}
+	async function step2c() {
+	await step2b()
+		sound_shot.play()
+		return new Promise((resolve, reject)=> {		
+			stone.sprite.position.z = 50
+			stone.sprite.angle = 6 * Math.PI
+			stone.visible(true)
+			let timer = setInterval( function () {
+				if ( stone.sprite.position.z > 0) {
+				     stone.sprite.position.z       -= 50 / 100
+			             stone.sprite.angle -= (6 * Math.PI) / 100
+				} else { 
+				     clearInterval(timer)
+				     resolve(true)
+				}
+			},25)
+		})
+	}
+	async function step2d() {
+	await step2c()
+		return new Promise((resolve, reject)=> {
+			let timer = setInterval( function () {
+				if (logo_r.position.y < -1) {	
+				 	for(let value in symbols.logo) {
+						if (value!=="loaded") {
+							symbols.logo[value].sprite.position.y += 0.05
+							symbols.logo[value].sprite.width += 0.05
+							symbols.logo[value].sprite.height += 0.05
+						} 
+					} 
+				} else 	if (logo_r.position.y >= -1 && logo_r.position.y < -0.5 ) {
+					 for(let value in symbols.logo) {
+						if (value!=="loaded") {
+							symbols.logo[value].sprite.position.y += 0.05
+							symbols.logo[value].sprite.width  -= 0.11
+							symbols.logo[value].sprite.height -= 0.11
+						} 
+					} 
+				} else {
+					symbols.visible(true,"text")
+					symbols.logo.red.sprite.isVisible = true
+					symbols.logo.green.sprite.isVisible = true
+					symbols.logo.blue.sprite.isVisible = true
+					clearInterval(timer)
+					resolve(true)
+				}
+			},25)
+		})
+	}
+	async function run() {
+	await step2d()
+		console.log("end")
+	}
+	run()
+}
+
