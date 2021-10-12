@@ -556,7 +556,7 @@ function show() {
 	await step1c()
 		return new Promise((resolve, reject)=> {
 			for(let value in symbols.logo) {
-				if (value!=="loaded") symbols.logo[value].sprite.position.z = 0 
+				if (value!=="loaded") symbols.logo[value].sprite.position.z = -1 
 			}
 			symbols.visible(true,"logo")
 			function journey (obj,pos) {
