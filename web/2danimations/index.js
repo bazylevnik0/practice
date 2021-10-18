@@ -17,11 +17,11 @@ function init() {
   	cloudr2.src = '/main/cloudr2+.png';
   } else {
   	line.src    = 'https://bazylevnik0.github.io/practice/web/2danimations/main/line.png';
-  	color.src   = '/main/color.png';
-  	cloudl1.src = '/main/cloudl1.png';
-  	cloudl2.src = '/main/cloudl2.png';
-  	cloudr1.src = '/main/cloudr1.png';
-  	cloudr2.src = '/main/cloudr2.png';
+  	color.src   = 'https://bazylevnik0.github.io/practice/web/2danimations/main/color.png';
+  	cloudl1.src = 'https://bazylevnik0.github.io/practice/web/2danimations/main/cloudl1.png';
+  	cloudl2.src = 'https://bazylevnik0.github.io/practice/web/2danimations/main/cloudl2.png';
+  	cloudr1.src = 'https://bazylevnik0.github.io/practice/web/2danimations/main/cloudr1.png';
+  	cloudr2.src = 'https://bazylevnik0.github.io/practice/web/2danimations/main/cloudr2.png';
   }
   cloudr2.onload = function() {
 	ctx = document.getElementById('main').getContext('2d');
