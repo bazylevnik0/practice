@@ -3,7 +3,7 @@ import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.133.0/examples/jsm/l
 
 var camera, scene, renderer;
 var geometry, material, mesh;
-var model, mixer , action_text_a, action_text_b , action_char, animations
+var model, mixer , animations , actions
 
 init();
 function init() {
@@ -47,21 +47,15 @@ scene.add( plane );
 					animations = gltf.animations;
 
 					mixer = new THREE.AnimationMixer( model );
-
-					action_char = mixer.clipAction( animations[ 1 ] );
-					action_text_a = mixer.clipAction( animations[ 0 ] );
-					action_text_b = mixer.clipAction( animations[ 2 ] );
-
-					action_char.loop = THREE.LoopOnce
-					action_text_a.loop = THREE.LoopOnce
-					action_text_b.loop = THREE.LoopOnce
 					
-					action_char.clampWhenFinished   = true
-					action_text_a.clampWhenFinished = true
-					action_text_b.clampWhenFinished = true	
+					actions = {}
+					animations.forEach( (el)=> {
+						actions[el.name] = mixer.clipAction( el )
+						actions[el.name].loop = THREE.LoopOnce
+						actions[el.name].clampWhenFinished = true
+					})
+
 	
-
-
 		let loading = setInterval( function() {
 			if (model !== undefined &&
 			    mixer !== undefined) {
@@ -77,17 +71,14 @@ scene.add( plane );
 				
 			} 
 		},25)
-                //action.paused = true;
       } );
 
 function temp() {
-		console.log(model)
-		console.log(animations)
-
-		action_char.reset().play()
-		action_text_a.reset().play()
-		action_text_b.reset().play()
-
+		console.log(animations,actions)
+		
+		for( let val in actions ) { actions[val].reset().play()	}
+	
+	
 
 }
 
