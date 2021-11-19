@@ -1,6 +1,5 @@
 import * as THREE from 'https://cdn.skypack.dev/three@0.133.0/build/three.module.js';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.133.0/examples/jsm/loaders/GLTFLoader.js'; 
-//import { FBXLoader } from 'https://cdn.skypack.dev/three@0.133.0/examples/jsm/loaders/FBXLoader.js'; 
 
 var camera, scene, renderer;
 var geometry, material, mesh;
@@ -33,7 +32,7 @@ plane.rotation.x = -1.4
 scene.add( plane );
 
 	const loader = new GLTFLoader();
-	      loader.load( './src/mario_scene.glb',  function ( gltf ) {
+	      loader.load( './src/scene.glb',  function ( gltf ) {
 
 					model = gltf.scene;
 					model.scale.set(0.1, 0.1, 0.1)
