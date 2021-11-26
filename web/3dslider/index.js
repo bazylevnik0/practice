@@ -39,7 +39,7 @@ var coffee
 loader_mtl_c.load( 'https://bazylevnik0.github.io/practice/web/3dslider/coffee.mtl' ,     function( material ) {
                   material.preload();
                    loader_obj_c.setMaterials( material );
-						     loader_obj_c.load('https://bazylevnik0.github.io/pracice/web/3dslider/coffee.obj' , ( object ) => {
+						     loader_obj_c.load('https://bazylevnik0.github.io/practice/web/3dslider/coffee.obj' , ( object ) => {
                       object.rotation.y = -2
                       object.rotation.x = 0.5
                       coffee = object
