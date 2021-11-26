@@ -128,7 +128,7 @@ BABYLON.SceneLoader.Append("https://bazylevnik0.github.io/practice/web/3dmenu/me
         };
 
 	const scene_water = createScene_water();
- BABYLON.SceneLoader.Append("https://bazylevnik0.github.io/design/3dmenu/water/", "scene.gltf", scene_water, function (scene) {
+ BABYLON.SceneLoader.Append("https://bazylevnik0.github.io/practice/web/3dmenu/water/", "scene.gltf", scene_water, function (scene) {
 
       scene.createDefaultCameraOrLight(true, true, true);
         scene.activeCamera.alpha += Math.PI;
