@@ -36,10 +36,10 @@ scene.add( point_light_down );
 //load & set
 //coffee
 var coffee 
-loader_mtl_c.load( 'https://bazylevnik0.github.io/design/3dslider/coffee.mtl' ,     function( material ) {
+loader_mtl_c.load( 'https://bazylevnik0.github.io/practice/web/design/3dslider/coffee.mtl' ,     function( material ) {
                   material.preload();
                    loader_obj_c.setMaterials( material );
-						     loader_obj_c.load('https://bazylevnik0.github.io/design/3dslider/coffee.obj' , ( object ) => {
+						     loader_obj_c.load('https://bazylevnik0.github.io/pracice/web/design/3dslider/coffee.obj' , ( object ) => {
                       object.rotation.y = -2
                       object.rotation.x = 0.5
                       coffee = object
@@ -51,10 +51,10 @@ loader_mtl_c.load( 'https://bazylevnik0.github.io/design/3dslider/coffee.mtl' , 
 })
 //orange
 var orange 
-loader_mtl_o.load( 'https://bazylevnik0.github.io/design/3dslider/orange.mtl' ,     function( material ) {
+loader_mtl_o.load( 'https://bazylevnik0.github.io/practice/web/design/3dslider/orange.mtl' ,     function( material ) {
                   material.preload();
                    loader_obj_o.setMaterials( material );
-						     loader_obj_o.load('https://bazylevnik0.github.io/design/3dslider/orange.obj' , ( object ) => {
+						     loader_obj_o.load('https://bazylevnik0.github.io/practice/web/design/3dslider/orange.obj' , ( object ) => {
                       object.rotation.y = -2
                       object.rotation.x = 0.5
                       orange = object
@@ -67,10 +67,10 @@ loader_mtl_o.load( 'https://bazylevnik0.github.io/design/3dslider/orange.mtl' , 
 
 //lemon
 var limon 
-loader_mtl_l.load( 'https://bazylevnik0.github.io/design/3dslider/limon.mtl' ,     function( material ) {
+loader_mtl_l.load( 'https://bazylevnik0.github.io/practice/web/design/3dslider/limon.mtl' ,     function( material ) {
                   material.preload();
                    loader_obj_l.setMaterials( material );
-						     loader_obj_l.load('https://bazylevnik0.github.io/design/3dslider/limon.obj' , ( object ) => {
+						     loader_obj_l.load('https://bazylevnik0.github.io/practice/web/design/3dslider/limon.obj' , ( object ) => {
                       object.rotation.y = -2
                       object.rotation.x = 0.5
                       limon = object
