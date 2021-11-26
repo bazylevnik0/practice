@@ -98,7 +98,7 @@ const scene_meal = createScene_meal();
 
 
 // Append glTF model to scene.
-BABYLON.SceneLoader.Append("https://bazylevnik0.github.io/design/3dmenu/meal/", "scene.gltf", scene_meal, function (scene) {
+BABYLON.SceneLoader.Append("https://bazylevnik0.github.io/practice/web/3dmenu/meal/", "scene.gltf", scene_meal, function (scene) {
       scene.createDefaultCameraOrLight(true, true, true);
       scene.activeCamera.alpha += Math.PI;
       scene.meshes[0].rotationQuaternion = null;
